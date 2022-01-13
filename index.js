@@ -47,3 +47,40 @@ ID: ${msg.from.id}
   console.log(msg)
 });
 
+let firstRunClear = true;  //clear all data from Late first run
+
+function getData(){
+
+  if (firstRunClear) {
+    firstRunClear = false;
+    sql.connect(sqlConfig).then(pool1 => {pool1.request().query(`delete from Records`)});
+    return
+  }
+
+  sql.connect(sqlConfig).then(pool => {
+    // Query
+
+    return pool.request()
+        .query('select * from Records')
+  }).then(result => {
+    
+    for (let i = 0; i < result.recordset.length; i++){
+
+      sql.connect(sqlConfig).then(pool1 => {pool1.request().query(`delete from Records where ID = ${result.recordset[i].ID}`)});
+      let txt = `
+==========================
+${result.recordset[i].CODE == 0 ? 'IN' : 'OUT'}
+${result.recordset[i].FIO}
+==========================
+`;
+
+  bot.sendMessage(result.recordset[i].IDTELEGRAM1 , txt );
+
+}
+}).catch(err => {
+// ... error checks
+});
+}
+
+
+let intervalId = setInterval(getData, 5000)
