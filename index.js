@@ -38,9 +38,26 @@ bot.onText(/\/start/, (msg, _) => {
   const date = new Date(msg.date * 1000);
   const hour = date.getHours();
   const minute = date.getMinutes();
+  let greeting;
+
+  switch (hour) {
+    case (hour >= 0 && hour <= 7):
+      greeting = 'Good night!'
+      break;
+    case (hour >= 8 && hour <= 11):
+      greeting = 'Good morning!'
+      break;
+    case (hour >= 12 && hour <= 18):
+      greeting = 'Good day!'
+      break;
+    default:
+      greeting = 'Good evening!'
+      break;
+  }
   const returnMessage = `
-Time: ${hour}:${minute}
-ID: ${msg.from.id}
+${greeting}
+Your ID: ${msg.from.id}
+Your request has been accepted!
   `;
 
   bot.sendMessage(chatId, returnMessage);
